@@ -28,6 +28,18 @@ static void strcat_separator(char * str, char separator)
 
 /*****************************************************************************/
 
+static int is_int(const char * str)
+{
+	while (*str) {
+		if (*str <= '0' || *str >= '9')
+			return 0;
+		str++;
+	}
+	return 1;
+}
+
+/*****************************************************************************/
+
 static char * getcwd_alloc(void)
 {
 	char * buf;
@@ -131,7 +143,7 @@ static char * get_from_procfs_linux(void)
 
 	buf[BUF_SIZE-1] = 0;
 
-	if (buf[0] <= '0' || buf[9] > '9')
+	if (!is_int(buf))
 		goto end;
 
 	if (atol(buf) != getpid())
@@ -160,7 +172,7 @@ static char * get_from_procfs_freebsd(void)
 
 	buf[BUF_SIZE-1] = 0;
 
-	if (buf[0] <= '0' || buf[9] > '9')
+	if (!is_int(buf))
 		goto end;
 
 	if (atol(buf) != getpid())
@@ -197,7 +209,7 @@ static char * get_from_procfs_netbsd(void)
 
 	buf[BUF_SIZE-1] = 0;
 
-	if (buf[0] <= '0' || buf[9] > '9')
+	if (!is_int(buf))
 		goto end;
 
 	if (atol(buf) != getpid())
