@@ -443,6 +443,7 @@ const char * mypath_get_application_path(const char * argv0, unsigned int flags)
 
 int main(int argc, char **argv)
 {
+	(void) argc;
 	char * path_from_procfs = get_from_procfs();
 	char * path_from_dladdr = get_from_dladdr();
 	char * path_from_argv0  = get_from_path(argv[0]);
