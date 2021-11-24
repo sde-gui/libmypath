@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
+#define _DEFAULT_SOURCE
 
-#if !MYPATH_DISABLE_DLADDR
+#if !defined( MYPATH_DISABLE_DLADDR)
 #define _GNU_SOURCE
 #include <dlfcn.h>
 #endif
@@ -8,7 +9,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <unistd.h>
-#include <strings.h>
+#include <string.h>
 #include <stdlib.h>
 
 #include "mypath.h"
@@ -18,10 +19,10 @@
 static void strcat_separator(char * str, char separator)
 {
 	size_t l = strlen(str);
-	if (buf[l - 1] != separator)
+	if (str[l - 1] != separator)
 	{
-		buf[l] = separator;
-		buf[l + 1] = 0;
+		str[l] = separator;
+		str[l + 1] = 0;
 	}
 }
 
@@ -240,7 +241,7 @@ end:
 
 /*****************************************************************************/
 
-#if !MYPATH_DISABLE_DL
+#if !defined(MYPATH_DISABLE_DLADDR)
 
 /*
 
@@ -264,6 +265,7 @@ static char * get_from_dladdr()
 {
 	extern int main();
 	Dl_info info;
+
 	if (dladdr(main, &info) != 0 && info.dli_fname && info.dli_fname[0] == '/')
 	{
 		return strdup(info.dli_fname);
@@ -275,7 +277,6 @@ static char * get_from_dladdr()
 
 static char * get_from_dladdr()
 {
-    (void) argv0;
 	return NULL;
 }
 
@@ -309,7 +310,7 @@ end:
 	return result;
 }
 
-static get_from_path_check_dir(const char * dir, const char * argv0)
+static char * get_from_path_check_dir(const char * dir, const char * argv0)
 {
 	size_t size;
 	struct stat st;
