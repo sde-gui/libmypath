@@ -62,7 +62,7 @@ Libmypath tries all the mentioned procfs layouts in order and doesn't apply any 
 
 # dladdr() issues
 
-1. A backward-compatible bug render dladdr() useless on FreeBSD:
+1. `man 3 dladdr` under FreeBSD reports:
 
 > This implementation is bug-compatible with the Solaris implementation.
 > In particular, the following bugs are present:
@@ -73,6 +73,8 @@ Libmypath tries all the mentioned procfs layouts in order and doesn't apply any 
 > ing a program specified by its full pathname, most shells set argv\[0\]
 > to the pathname.  But this is not required of shells or guaranteed by
 > the operating system.
+
+I've not tested if other systems behave the same or not. If they do, `dladdr()` is just a verbose way to say `argv[0]`, and `argv[0]` isn't guaranteed to containg a valid command name. If they don't, `dladdr()` is more reliable way to get the path. Anyway, there MAY be some systems now or in the future that return the real path on `dladdr()`.
 
 2. "In dynamically linked programs, the address of a global function will point to its program linkage table entry, rather than to the entry point of the function itself. This causes most global functions to appear to be defined within the main executable, rather than in the shared libraries where the actual code resides."
 

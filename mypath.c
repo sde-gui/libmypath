@@ -241,49 +241,6 @@ end:
 
 /*****************************************************************************/
 
-#if !defined(MYPATH_DISABLE_DLADDR)
-
-/*
-
-FreeBSD: man 3 dladdr
-
-> This implementation is bug-compatible with the Solaris implementation.
-> In particular, the following bugs are present:
-
-> If addr lies in the main executable rather than in a shared library,
-> the pathname returned in dli_fname may not be correct.  The pathname
-> is taken directly from argv[0] of the calling process.  When execut-
-> ing a program specified by its full pathname, most shells set argv[0]
-> to the pathname.  But this is not required of shells or guaranteed by
-> the operating system.
-
-This makes dladdr() useless on FreeBSD and Solaris.
-
-*/
-
-static char * get_from_dladdr()
-{
-	extern int main();
-	Dl_info info;
-
-	if (dladdr(main, &info) != 0 && info.dli_fname && info.dli_fname[0] == '/')
-	{
-		return strdup(info.dli_fname);
-	}
-	return NULL;
-}
-
-#else
-
-static char * get_from_dladdr()
-{
-	return NULL;
-}
-
-#endif
-
-/*****************************************************************************/
-
 static char * get_from_path_cwd(const char * argv0)
 {
 	char * result = NULL;
@@ -409,6 +366,49 @@ static char * get_from_path(const char * argv0)
 
 	return result;
 }
+
+/*****************************************************************************/
+
+#if !defined(MYPATH_DISABLE_DLADDR)
+
+/*
+
+FreeBSD: man 3 dladdr
+
+> This implementation is bug-compatible with the Solaris implementation.
+> In particular, the following bugs are present:
+
+> If addr lies in the main executable rather than in a shared library,
+> the pathname returned in dli_fname may not be correct.  The pathname
+> is taken directly from argv[0] of the calling process.  When execut-
+> ing a program specified by its full pathname, most shells set argv[0]
+> to the pathname.  But this is not required of shells or guaranteed by
+> the operating system.
+
+Unsure if other systems behave the same or not.
+
+*/
+
+static char * get_from_dladdr()
+{
+	extern int main();
+	Dl_info info;
+
+	if (dladdr(main, &info) != 0 && info.dli_fname)
+	{
+		return get_from_path(info.dli_fname);
+	}
+	return NULL;
+}
+
+#else
+
+static char * get_from_dladdr()
+{
+	return NULL;
+}
+
+#endif
 
 /*****************************************************************************/
 
