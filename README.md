@@ -1,4 +1,4 @@
-# Libmypath
+# Libmypath v0.1.0
 
 A small library that helps your application to locate the application's data files.
 
@@ -10,9 +10,29 @@ There are several methods to locate the application path. Libmypath tries the fo
 2. Libmypath uses dladdr() to read the file name of the mapped executable image.
 3. As the last resort, libmypath attemts to guess the path based on the value of *argv\[0\]* and the *PATH* environent variable.
 
+# Supported operating systems and environments
+
+The library targets:
+
+* Linux
+* FreeBSD
+* NetBSD
+
+May work for other Unix-like systems as weel.
+
+More systems will probably be tested in the future.
+
 # Usage
 
-Libmypath is not intended for building as a shared object and installing to `{/,/usr,/usr/local}lib`. Just drop it into your application's source code and use it directly.
+Libmypath is not intended for building as a shared object and installing into `{/,/usr,/usr/local}lib`. Just drop it into your application's source code and use it directly.
+
+On Linux, provide `-ldl` option for the linker in order to make `dladdr()` symbol available. Refer to OS-specific manuals on other systems.
+
+When linking the application statically or on systems where `dladdr()` is unavailable, `#define MYPATH_DISABLE_DLADDR` to disable linking to that symbol. (Normally the option looks like `-DMYPATH_DISABLE_DLADDR` for gcc, clang or another gcc-compatible compiler.)
+
+# Test app
+
+See `build_test_app.sh`. Edit it for make the app building under your OS, if necessary. Build it and make sure the detection logic works as expected. Report issues, if any.
 
 # Portability issues
 
@@ -38,27 +58,23 @@ NetBSD:
     /proc/curproc -> \[pid\]
     /proc/\[pid\]/exe -> \[path\]
 
-Libmypath tries all the mentioned procfs layouts in order and doesn't contain any compile-time or run-time OS-detection logic.
+Libmypath tries all the mentioned procfs layouts in order and doesn't apply any compile-time or run-time OS-detection logic.
 
 # dladdr() issues
 
-1. dladdr() is not in POSIX.
-
-2. A backward-compatible bug render dladdr() useless on FreeBSD:
+1. A backward-compatible bug render dladdr() useless on FreeBSD:
 
 > This implementation is bug-compatible with the Solaris implementation.
 > In particular, the following bugs are present:
 
 > If addr lies in the main executable rather than in a shared library,
 > the pathname returned in dli_fname may not be correct.  The pathname
-> is taken directly from argv[0] of the calling process.  When execut-
-> ing a program specified by its full pathname, most shells set argv[0]
+> is taken directly from argv\[0\] of the calling process.  When execut-
+> ing a program specified by its full pathname, most shells set argv\[0\]
 > to the pathname.  But this is not required of shells or guaranteed by
 > the operating system.
 
-3. "In dynamically linked programs, the address of a global function will point to its program linkage table entry, rather than to the entry point of the function itself. This causes most global functions to appear to be defined within the main executable, rather than in the shared libraries where the actual code resides."
+2. "In dynamically linked programs, the address of a global function will point to its program linkage table entry, rather than to the entry point of the function itself. This causes most global functions to appear to be defined within the main executable, rather than in the shared libraries where the actual code resides."
 
 The third issue does not affect Libmypath since Libmypath does not cover cases of shared libraries. But if you will implement path detection method for shared libraries (in fact, dladdr() is the only possible method for this), be aware. Pass a pointer to a global variable into dladdr(), not to a global function. A pointer to a variable actually contains an address within the data section of your shared library, while pointer to global function may point to some trampoline code.
-
-
 
