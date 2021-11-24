@@ -18,7 +18,7 @@ The library targets:
 * FreeBSD
 * NetBSD
 
-May work for other Unix-like systems as weel.
+May work for other Unix-like systems as well.
 
 More systems will probably be tested in the future.
 
