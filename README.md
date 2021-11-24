@@ -44,19 +44,25 @@ See `build_test_app.sh`. Edit it for make the app building under your OS, if nec
 
 Linux:
 
-    /proc/self -> \[pid\]
-    /proc/\[pid\]/exe -> \[path\]
+```
+    /proc/self -> [pid]
+    /proc/[pid]/exe -> [path]
+```
 
 FreeBSD:
 
-    /proc/curproc -> \[pid\]
-    /proc/\[pid\]/file -> \[path\]
+```
+    /proc/curproc -> [pid]
+    /proc/[pid]/file -> [path]
+```
 
 NetBSD:
 
+```
     /proc/self -> curproc
-    /proc/curproc -> \[pid\]
-    /proc/\[pid\]/exe -> \[path\]
+    /proc/curproc -> [pid]
+    /proc/[pid]/exe -> [path]
+```
 
 Libmypath tries all the mentioned procfs layouts in order and doesn't apply any compile-time or run-time OS-detection logic.
 
