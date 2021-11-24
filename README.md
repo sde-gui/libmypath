@@ -32,7 +32,7 @@ When linking the application statically or on systems where `dladdr()` is unavai
 
 # Test app
 
-See `build_test_app.sh`. Edit it for make the app building under your OS, if necessary. Build it and make sure the detection logic works as expected. Report issues, if any.
+See `build_test_app.sh`. Edit it, if necessary, to make the app building under your OS. Build the app and make sure the detection logic works as expected. Report issues, if any.
 
 # Portability issues
 
