@@ -75,8 +75,8 @@ Libmypath tries all the mentioned procfs layouts in order and doesn't apply any 
 
 > If addr lies in the main executable rather than in a shared library,
 > the pathname returned in dli_fname may not be correct.  The pathname
-> is taken directly from argv\[0\] of the calling process.  When execut-
-> ing a program specified by its full pathname, most shells set argv\[0\]
+> is taken directly from argv\[0\] of the calling process.  When executing
+> a program specified by its full pathname, most shells set argv\[0\]
 > to the pathname.  But this is not required of shells or guaranteed by
 > the operating system.
 
