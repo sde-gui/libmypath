@@ -182,7 +182,7 @@ static char * get_from_procfs_freebsd(void)
 	struct stat st;
 
 	proc_curproc = readlink_alloc("/proc/curproc");
-	if (proc_curproc)
+	if (!proc_curproc)
 		goto end;
 
 	if (!is_int(proc_curproc))
@@ -219,7 +219,7 @@ static char * get_from_procfs_netbsd(void)
 		goto end;
 
 	proc_curproc = readlink_alloc("/proc/curproc");
-	if (proc_curproc)
+	if (!proc_curproc)
 		goto end;
 
 	if (!is_int(proc_curproc))
