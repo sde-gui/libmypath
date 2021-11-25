@@ -47,7 +47,7 @@ static void strcat_separator(char * str, char separator)
 static int is_int(const char * str)
 {
 	while (*str) {
-		if (*str <= '0' || *str >= '9')
+		if (*str < '0' || *str > '9')
 			return 0;
 		str++;
 	}
