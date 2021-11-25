@@ -1,8 +1,24 @@
+
+/* We need SUSv4 (i.e., the POSIX.1-2008 base specification plus the XSI extension). */
+
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE 700
+#endif
+
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
+#endif
+
+/* GLIBC stuff. See feature_test_macros(7) for details */
 #define _DEFAULT_SOURCE
 
+/*****************************************************************************/
+
 #if !defined( MYPATH_DISABLE_DLADDR)
-#define _GNU_SOURCE
+/* dladdr() is non-standard. We have to explicitly declare that we want OS-specific stuff. */
+#define _GNU_SOURCE      /* verified */
+#define _NETBSD_SOURCE   /* verified */
+#define _FREEBSD_SOURCE  /* guessed, not tested */
 #include <dlfcn.h>
 #endif
 
