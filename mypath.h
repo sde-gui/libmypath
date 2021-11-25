@@ -10,10 +10,13 @@
 #define MY_PATH_ALLOW_ROOT     (1 << 0)
 
 /*
-	Detects and returns a path to the executable image of the apllication or NULL if the detection failed.
+	Detects and returns a path to the executable image of the application or NULL if the detection failed.
 	Returns NULL when the process is running with root UID/EUID.
 	If you do insist on using relocatable application paths for root processes in your application, pass
 	MY_PATH_ALLOW_ROOT in flags.
+
+	The returned result is an absolute pathname with '.', '..' and symbolic links resolved,
+	as described in realpath(3).
 */
 const char * mypath_get_application_path(const char * argv0, unsigned int flags);
 

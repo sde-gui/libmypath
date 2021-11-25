@@ -146,6 +146,27 @@ failure:
 
 /*****************************************************************************/
 
+char * replace_with_realpath(char **path)
+{
+	char * resolved_path = NULL;
+	if (path && *path)
+	{
+		/*
+			realpath() is broken by design in POSIX.1-2001.
+			We need POSIX.1-2008 here.
+			http://pubs.opengroup.org/onlinepubs/009695399/functions/realpath.html
+			http://pubs.opengroup.org/onlinepubs/9699919799/functions/realpath.html
+		*/
+		resolved_path = realpath(*path, NULL);
+		free(*path);
+		*path = resolved_path;
+	}
+
+	return resolved_path;
+}
+
+/*****************************************************************************/
+
 static char * get_from_procfs_linux(void)
 {
 	char * proc_self = NULL;
@@ -260,7 +281,7 @@ static char * get_from_procfs(void)
 		result = get_from_procfs_netbsd();
 
 end:
-	return result;
+	return replace_with_realpath(&result);
 }
 
 /*****************************************************************************/
@@ -374,21 +395,7 @@ static char * get_from_path(const char * argv0)
 	else
 		result = get_from_path_scan(argv0);
 
-	if (result)
-	{
-		/*
-			realpath() is broken by design in POSIX.1-2001.
-			We need POSIX.1-2008 here.
-			http://pubs.opengroup.org/onlinepubs/009695399/functions/realpath.html
-			http://pubs.opengroup.org/onlinepubs/9699919799/functions/realpath.html
-			
-		*/
-		char * resolved_result = realpath(result, NULL);
-		free(result);
-		result = resolved_result;
-	}
-
-	return result;
+	return replace_with_realpath(&result);
 }
 
 /*****************************************************************************/
