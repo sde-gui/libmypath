@@ -146,23 +146,20 @@ failure:
 
 /*****************************************************************************/
 
-#define BUF_SIZE 64
-
 static char * get_from_procfs_linux(void)
 {
-	char buf[BUF_SIZE];
+	char * proc_self = NULL;
 	char * result = NULL;
 	struct stat st;
 
-	if (readlink("/proc/self", buf, BUF_SIZE) < 1)
+	proc_self = readlink_alloc("/proc/self");
+	if (!proc_self)
 		goto end;
 
-	buf[BUF_SIZE-1] = 0;
-
-	if (!is_int(buf))
+	if (!is_int(proc_self))
 		goto end;
 
-	if (atol(buf) != getpid())
+	if (atol(proc_self) != getpid())
 		goto end;
 
 	if (lstat("/proc/self/exe", &st) < 0)
@@ -174,24 +171,24 @@ static char * get_from_procfs_linux(void)
 	result = readlink_alloc("/proc/self/exe");
 
 end:
+	free(proc_self);
 	return result;
 }
 
 static char * get_from_procfs_freebsd(void)
 {
-	char buf[BUF_SIZE];
+	char * proc_curproc = NULL;
 	char * result = NULL;
 	struct stat st;
 
-	if (readlink("/proc/curproc", buf, BUF_SIZE) < 1)
+	proc_curproc = readlink_alloc("/proc/curproc");
+	if (proc_curproc)
 		goto end;
 
-	buf[BUF_SIZE-1] = 0;
-
-	if (!is_int(buf))
+	if (!is_int(proc_curproc))
 		goto end;
 
-	if (atol(buf) != getpid())
+	if (atol(proc_curproc) != getpid())
 		goto end;
 
 	if (lstat("/proc/curproc/file", &st) < 0)
@@ -203,32 +200,32 @@ static char * get_from_procfs_freebsd(void)
 	result = readlink_alloc("/proc/curproc/file");
 
 end:
+	free(proc_curproc);
 	return result;
 }
 
 static char * get_from_procfs_netbsd(void)
 {
-	char buf[BUF_SIZE];
+	char * proc_self = NULL;
+	char * proc_curproc = NULL;
 	char * result = NULL;
 	struct stat st;
 
-	if (readlink("/proc/self", buf, BUF_SIZE) < 1)
+	proc_self = readlink_alloc("/proc/self");
+	if (!proc_self)
 		goto end;
 
-	buf[BUF_SIZE-1] = 0;
-
-	if (strcmp(buf, "curproc") != 0)
+	if (strcmp(proc_self, "curproc") != 0)
 		goto end;
 
-	if (readlink("/proc/curproc", buf, BUF_SIZE) < 1)
+	proc_curproc = readlink_alloc("/proc/curproc");
+	if (proc_curproc)
 		goto end;
 
-	buf[BUF_SIZE-1] = 0;
-
-	if (!is_int(buf))
+	if (!is_int(proc_curproc))
 		goto end;
 
-	if (atol(buf) != getpid())
+	if (atol(proc_curproc) != getpid())
 		goto end;
 
 	if (lstat("/proc/curproc/exe", &st) < 0)
@@ -240,11 +237,10 @@ static char * get_from_procfs_netbsd(void)
 	result = readlink_alloc("/proc/curproc/exe");
 
 end:
+	free(proc_self);
+	free(proc_curproc);
 	return result;
 }
-
-
-#undef BUF_SIZE
 
 static char * get_from_procfs(void)
 {
